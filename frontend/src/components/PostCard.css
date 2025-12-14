@@ -1,0 +1,225 @@
+.post-card {
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
+.post-card:hover {
+    border-color: var(--primary-500);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+}
+
+.post-votes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 50px;
+}
+
+.vote-btn {
+    background: transparent;
+    color: var(--text-tertiary);
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    font-size: 1.2rem;
+}
+
+.vote-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.vote-btn.upvote:hover {
+    color: var(--success);
+}
+
+.vote-btn.downvote:hover {
+    color: var(--error);
+}
+
+.vote-count {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.vote-count.positive {
+    color: var(--success);
+}
+
+.vote-count.negative {
+    color: var(--error);
+}
+
+.post-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+}
+
+.category-badge {
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.author-avatar-small {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--secondary-500), var(--primary-500));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: white;
+}
+
+.post-author {
+    color: var(--text-secondary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.role-tag {
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.role-tag.admin {
+    background: linear-gradient(135deg, var(--error), #f97316);
+    color: white;
+}
+
+.role-tag.moderator {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    color: white;
+}
+
+.post-time {
+    color: var(--text-tertiary);
+}
+
+.post-badges {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.pin-badge,
+.lock-badge {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.pin-badge {
+    background: linear-gradient(135deg, var(--warning), #f97316);
+    color: white;
+}
+
+.lock-badge {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.post-title {
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    margin: var(--spacing-sm) 0;
+    transition: color var(--transition-fast);
+}
+
+.post-card:hover .post-title {
+    color: var(--primary-400);
+}
+
+.post-text {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.post-footer {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+.post-action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: transparent;
+    color: var(--text-tertiary);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.post-action:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.action-icon {
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .post-card {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .post-votes {
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .post-title {
+        font-size: 1.2rem;
+    }
+
+    .post-footer {
+        flex-wrap: wrap;
+    }
+}
