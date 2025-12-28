@@ -104,18 +104,39 @@
     gap: var(--spacing-lg);
 }
 
-.user-post-card {
+.post-card.profile-post-card {
+    display: flex;
+    /* Override grid */
+    flex-direction: column;
     padding: var(--spacing-lg);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-    transition: all var(--transition-base);
-    cursor: pointer;
+    height: 100%;
+    gap: var(--spacing-md);
 }
 
-.user-post-card:hover {
-    border-color: var(--primary-500);
-    box-shadow: var(--shadow-glow);
-    transform: translateY(-4px);
+.post-card.profile-post-card .post-votes {
+    flex-direction: row;
+    /* Horizontal votes */
+    width: 100%;
+    /* Full width */
+    justify-content: center;
+    /* Center align */
+    order: 3;
+    /* Move to bottom */
+    margin-top: auto;
+    /* Push to bottom */
+    background: rgba(15, 23, 42, 0.4);
+    /* Slightly lighter for contrast inside card */
+    padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.post-card.profile-post-card .post-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.post-card.profile-post-card .post-footer {
+    display: none;
 }
 
 .post-card-header {

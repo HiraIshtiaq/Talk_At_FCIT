@@ -74,7 +74,7 @@ class User(AbstractUser):
         choices=ROLE_CHOICES,
         default='user'
     )
-    is_verified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=True)
     is_suspended = models.BooleanField(default=False)
     suspended_until = models.DateTimeField(null=True, blank=True)
     

@@ -79,6 +79,9 @@ export const auth = {
     getCurrentUser: () =>
         api.get<User>('/auth/me/'),
 
+    getUser: (id: number) =>
+        api.get<User>(`/auth/users/${id}/`),
+
     logout: () => {
         localStorage.removeItem('accessToken')
         localStorage.removeItem('refreshToken')
@@ -94,6 +97,8 @@ export const discussions = {
         api.get<Post[]>('/discussions/posts/', { params: { category, search, author, ordering: author ? '-created_at' : undefined } }),
 
     getPost: (id: number) => api.get<Post>(`/discussions/posts/${id}/`),
+
+    searchPosts: (query: string) => api.get<Post[]>('/discussions/posts/', { params: { search: query } }),
 
     createPost: (postData: any) => api.post('/discussions/posts/', postData),
 

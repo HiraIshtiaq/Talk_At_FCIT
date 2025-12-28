@@ -86,11 +86,16 @@ function App() {
       );
     }
 
+    if (currentPage.startsWith('profile/')) {
+      const userId = parseInt(currentPage.split('/')[1]);
+      return <Profile userId={userId} user={null} onNavigate={handleNavigate} currentUser={currentUser} />;
+    }
+
     switch (currentPage) {
       case 'login':
         return <Login onLogin={handleLogin} />
       case 'profile':
-        return <Profile user={currentUser} onNavigate={handleNavigate} />
+        return <Profile user={currentUser} onNavigate={handleNavigate} currentUser={currentUser} />
       case 'create-post':
         return <CreatePost onNavigate={handleNavigate} currentUser={currentUser} />
       case 'post-detail':
@@ -107,12 +112,13 @@ function App() {
             onNavigate={handleNavigate}
             isAuthenticated={isAuthenticated}
             onViewPost={handleViewPost}
+            currentUser={currentUser}
           />
         )
       case 'notifications':
         return <Notifications />
       case 'search':
-        return <Search onNavigate={handleNavigate} onViewPost={handleViewPost} />
+        return <Search onNavigate={handleNavigate} onViewPost={handleViewPost} currentUser={currentUser} />
       case 'messages':
         return <Messages onNavigate={handleNavigate} currentUser={currentUser} />
       case 'chat':
@@ -127,6 +133,7 @@ function App() {
             onNavigate={handleNavigate}
             isAuthenticated={isAuthenticated}
             onViewPost={handleViewPost}
+            currentUser={currentUser}
           />
         )
     }

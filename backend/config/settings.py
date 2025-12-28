@@ -90,10 +90,10 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.vercel.app
 # ...
 
 # Database Configuration
-# Tries to get DATABASE_URL from environment (Vercel), fallbacks to local Docker or SQLite
+# Tries to get DATABASE_URL or POSTGRES_URL (Vercel automatic), fallbacks to local Docker or SQLite
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL', default=f"postgres://{config('DB_USER', default='postgres')}:{config('DB_PASSWORD', default='postgres')}@{config('DB_HOST', default='localhost')}:{config('DB_PORT', default='5432')}/{config('DB_NAME', default='fcit_db')}")
+        default=config('DATABASE_URL', default=config('POSTGRES_URL', default=f"postgres://{config('DB_USER', default='postgres')}:{config('DB_PASSWORD', default='postgres')}@{config('DB_HOST', default='localhost')}:{config('DB_PORT', default='5432')}/{config('DB_NAME', default='fcit_db')}"))
     )
 }
 
@@ -133,7 +133,7 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
 
 # Media files
 MEDIA_URL = '/media/'

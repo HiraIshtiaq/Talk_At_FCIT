@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
-import { type Post, type User, type Category, getTimeAgo, getInitials, getCategoryIcon } from '../data/mockData';
-import { discussions } from '../services/api';
+import { type Post, type User, type Category, getInitials, getCategoryIcon } from '../data/mockData';
+import { discussions, users } from '../services/api';
+import PostCard from '../components/PostCard';
 import './Search.css';
 
 interface SearchProps {
     onNavigate: (page: string) => void;
     onViewPost: (post: Post) => void;
+    currentUser: any;
 }
 
 type SearchTab = 'posts' | 'users' | 'categories';
 
-const Search = ({ onNavigate: _onNavigate, onViewPost }: SearchProps) => {
+const Search = ({ onNavigate, onViewPost, currentUser }: SearchProps) => {
     const [query, setQuery] = useState('');
     const [activeTab, setActiveTab] = useState<SearchTab>('posts');
     const [searchResults, setSearchResults] = useState<{
@@ -35,43 +37,47 @@ const Search = ({ onNavigate: _onNavigate, onViewPost }: SearchProps) => {
             .catch(err => console.error("Failed to fetch initial categories", err));
     }, []);
 
-    const handleSearch = async (searchQuery: string) => {
+    useEffect(() => {
+        const timeoutId = setTimeout(async () => {
+            if (query.trim().length < 2) {
+                setSearchResults({ posts: [], users: [], categories: [] });
+                setHasSearched(false);
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const [postsRes, catsRes, usersRes] = await Promise.all([
+                    discussions.searchPosts(query),
+                    discussions.getCategories(),
+                    users.search(query)
+                ]);
+
+                const posts = Array.isArray(postsRes.data) ? postsRes.data : (postsRes.data as any).results || [];
+                const allCats = Array.isArray(catsRes.data) ? catsRes.data : (catsRes.data as any).results || [];
+                const foundUsers = (usersRes.data as any).results || [];
+
+                const filteredCats = allCats.filter((c: any) => c && c.name && c.name.toLowerCase().includes(query.toLowerCase()));
+
+                setSearchResults({
+                    posts: posts,
+                    users: foundUsers,
+                    categories: filteredCats
+                });
+                setHasSearched(true);
+            } catch (error: any) {
+                console.error("Search failed:", error.response?.data || error.message);
+                // Ensure we don't leave loading state if verify fails, but here we just log
+            } finally {
+                setLoading(false);
+            }
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timeoutId);
+    }, [query]);
+
+    const handleSearch = (searchQuery: string) => {
         setQuery(searchQuery);
-
-        if (searchQuery.trim().length < 2) {
-            setSearchResults({ posts: [], users: [], categories: [] });
-            setHasSearched(false);
-            return;
-        }
-
-        setLoading(true);
-        try {
-            // Only searching posts and categories for now
-            const [postsRes, catsRes] = await Promise.all([
-                discussions.getPosts(undefined, searchQuery),
-                discussions.getCategories() // Search not supported? Fetch all and filter
-            ]);
-
-            const posts = Array.isArray(postsRes.data) ? postsRes.data : (postsRes.data as any).results || [];
-            // If backend supports search on categories, use it. But for now filter all.
-            // Actually getCategories doesn't take params in my api definition?
-            // api.ts: getCategories: () => api.get<Category[]>('/discussions/categories/')
-            // So we fetch all.
-            const allCats = Array.isArray(catsRes.data) ? catsRes.data : (catsRes.data as any).results || [];
-
-            const filteredCats = allCats.filter((c: any) => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-            setSearchResults({
-                posts: posts,
-                users: [],
-                categories: filteredCats
-            });
-            setHasSearched(true);
-        } catch (error) {
-            console.error("Search failed", error);
-        } finally {
-            setLoading(false);
-        }
     };
 
     const totalResults =
@@ -102,7 +108,6 @@ const Search = ({ onNavigate: _onNavigate, onViewPost }: SearchProps) => {
                     onChange={(e) => handleSearch(e.target.value)}
                     placeholder="Search for anything..."
                     autoFocus
-                    disabled={loading}
                 />
                 {query && !loading && (
                     <button className="clear-btn" onClick={() => handleSearch('')}>
@@ -138,32 +143,13 @@ const Search = ({ onNavigate: _onNavigate, onViewPost }: SearchProps) => {
                             <div className="posts-results">
                                 {searchResults.posts.length > 0 ? (
                                     searchResults.posts.map(post => (
-                                        <div
+                                        <PostCard
                                             key={post.id}
-                                            className="result-card post-result"
+                                            post={post}
                                             onClick={() => onViewPost(post)}
-                                        >
-                                            <div className="result-category">
-                                                <span>{getCategoryIcon(post.category.slug)}</span>
-                                                {post.category.name}
-                                            </div>
-                                            <h3 className="result-title">{post.title}</h3>
-                                            <p className="result-excerpt">
-                                                {post.content.substring(0, 150)}...
-                                            </p>
-                                            <div className="result-meta">
-                                                <div className="result-author">
-                                                    <div className="mini-avatar">
-                                                        {getInitials(post.author.first_name, post.author.last_name)}
-                                                    </div>
-                                                    {post.author.first_name} {post.author.last_name}
-                                                </div>
-                                                <span className="result-stats">
-                                                    ⬆️ {post.upvotes_count} • 💬 {post.comments_count}
-                                                </span>
-                                                <span className="result-time">{getTimeAgo(post.created_at)}</span>
-                                            </div>
-                                        </div>
+                                            currentUser={currentUser}
+                                            onNavigate={onNavigate}
+                                        />
                                     ))
                                 ) : (
                                     <div className="no-results">
@@ -197,7 +183,7 @@ const Search = ({ onNavigate: _onNavigate, onViewPost }: SearchProps) => {
                                                     <span>👥 {user.followers_count} followers</span>
                                                 </div>
                                             </div>
-                                            <button className="view-profile-btn">View Profile</button>
+                                            <button className="view-profile-btn" onClick={() => onNavigate(`profile/${user.id}`)}>View Profile</button>
                                         </div>
                                     ))
                                 ) : (

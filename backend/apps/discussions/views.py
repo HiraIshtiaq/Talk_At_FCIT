@@ -103,7 +103,7 @@ class CommentListCreateView(generics.ListCreateAPIView):
     
     def get_queryset(self):
         post_id = self.kwargs.get('post_id')
-        return Comment.objects.filter(post_id=post_id, parent__isnull=True).select_related('author')
+        return Comment.objects.filter(post_id=post_id).select_related('author')
     
     def perform_create(self, serializer):
         post = get_object_or_404(Post, id=self.kwargs['post_id'])

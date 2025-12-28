@@ -30,13 +30,23 @@ class PostListSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     
+    user_vote = serializers.SerializerMethodField()
+    
     class Meta:
         model = Post
         fields = [
             'id', 'title', 'author', 'category', 'category_name',
             'upvotes_count', 'comments_count', 'is_pinned',
-            'created_at', 'updated_at'
+            'user_vote', 'created_at', 'updated_at'
         ]
+
+    def get_user_vote(self, obj):
+        """Get current user's vote on this post."""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            vote = Vote.objects.filter(user=request.user, post=obj).first()
+            return vote.value if vote else None
+        return None
 
 
 class PostDetailSerializer(serializers.ModelSerializer):

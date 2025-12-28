@@ -8,9 +8,10 @@ interface HomeProps {
     onNavigate: (page: string) => void
     isAuthenticated: boolean
     onViewPost: (post: Post) => void
+    currentUser: any
 }
 
-export default function Home({ onNavigate, isAuthenticated, onViewPost }: HomeProps) {
+export default function Home({ onNavigate, isAuthenticated, onViewPost, currentUser }: HomeProps) {
     // State
     const [selectedCategory, setSelectedCategory] = useState('all')
     const [searchQuery, setSearchQuery] = useState('')
@@ -136,6 +137,8 @@ export default function Home({ onNavigate, isAuthenticated, onViewPost }: HomePr
                                 key={post.id}
                                 post={post}
                                 onClick={() => onViewPost(post)}
+                                currentUser={currentUser}
+                                onNavigate={onNavigate}
                             />
                         ))
                     ) : (

@@ -1,15 +1,41 @@
 import { useState, useEffect } from 'react'
-import { discussions } from '../services/api'
+import { discussions, auth } from '../services/api'
+import PostCard from '../components/PostCard'
 import './Profile.css'
 
 interface ProfileProps {
     user: any
+    userId?: number
     onNavigate: (page: string) => void
+    currentUser?: any
 }
 
-export default function Profile({ user, onNavigate }: ProfileProps) {
+export default function Profile({ user: initialUser, userId, onNavigate, currentUser }: ProfileProps) {
+    const [user, setUser] = useState<any>(initialUser)
     const [posts, setPosts] = useState<any[]>([])
     const [stats, setStats] = useState({ upvotes: 0, comments: 0 })
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        setUser(initialUser)
+    }, [initialUser])
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user && userId) {
+                setLoading(true)
+                try {
+                    const res = await auth.getUser(userId)
+                    setUser(res.data)
+                } catch (err) {
+                    console.error("Failed to fetch user", err)
+                } finally {
+                    setLoading(false)
+                }
+            }
+        }
+        fetchUserData()
+    }, [userId, user])
 
     useEffect(() => {
         if (user) {
@@ -26,6 +52,10 @@ export default function Profile({ user, onNavigate }: ProfileProps) {
                 .catch(err => console.error("Failed to fetch user posts", err))
         }
     }, [user])
+
+    if (loading) {
+        return <div className="loading-spinner"></div>
+    }
 
     if (!user) {
         return (
@@ -83,27 +113,13 @@ export default function Profile({ user, onNavigate }: ProfileProps) {
                     <div className="posts-grid">
                         {posts.length > 0 ? (
                             posts.map(post => (
-                                <div key={post.id} className="user-post-card glass">
-                                    <div className="post-card-header">
-                                        <span className="category-badge badge">
-                                            {post.category?.name || 'General'}
-                                        </span>
-                                        <span className="post-date">
-                                            {new Date(post.created_at).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                    <h3 className="post-card-title">{post.title}</h3>
-                                    <div className="post-card-stats">
-                                        <span className="stat">
-                                            <span className="stat-icon">▲</span>
-                                            {post.upvotes_count || 0}
-                                        </span>
-                                        <span className="stat">
-                                            <span className="stat-icon">💬</span>
-                                            {post.comments_count || 0}
-                                        </span>
-                                    </div>
-                                </div>
+                                <PostCard
+                                    key={post.id}
+                                    post={post}
+                                    currentUser={currentUser}
+                                    onNavigate={onNavigate}
+                                    className="profile-post-card"
+                                />
                             ))
                         ) : (
                             <div className="no-posts">

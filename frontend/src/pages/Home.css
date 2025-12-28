@@ -149,6 +149,9 @@
     cursor: pointer;
     transition: all var(--transition-base);
     border: 2px solid var(--border-color);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .create-post-cta:hover {
@@ -184,6 +187,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .no-posts {
